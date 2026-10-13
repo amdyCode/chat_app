@@ -164,7 +164,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         // Welcome text
         Text(
-          _isLogin ? 'Bienvenue sur Lumina' : 'Créer un compte',
+          _isLogin ? 'Bienvenue sur Chat' : 'Créer un compte',
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 26,
@@ -340,7 +340,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       Icons.mail_outline,
                       color: AppColors.outline,
                     ),
-                    hintText: 'prenom.nom@lumina.io',
+                    hintText: 'prenom.nom@chat.io',
                   ),
                   validator: (val) {
                     if (val == null || val.trim().isEmpty) {
