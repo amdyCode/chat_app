@@ -1,9 +1,16 @@
+import 'package:chat_app/services/auth_service.dart';
+import 'package:chat_app/services/chat_service.dart';
+import 'package:chat_app/theme/app_theme.dart';
+import 'package:chat_app/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
-import 'screens/auth_screen.dart';
-import 'theme/app_theme.dart';
+import 'package:get/get.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  Get.put(AuthService(), permanent: true);
+  Get.put(ChatService(), permanent: true);
+
   runApp(const MainApp());
 }
 
@@ -12,7 +19,7 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Chat',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
