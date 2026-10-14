@@ -8,7 +8,7 @@ Application mobile Flutter moderne de messagerie 1:1 en temps réel, propulsée 
 
 | 🔐 Authentification | 👥 Discussions & Contacts | 💬 Chat 1:1 en Direct |
 | :---: | :---: | :---: |
-| ![image alt]()| ![image alt]() | ![image alt]() |
+| ![image alt](https://github.com/amdyCode/chat_app/blob/f85c6596692f465238c13029496b8c865a6d89ad/images/img1.png)| ![image alt](https://github.com/amdyCode/chat_app/blob/f85c6596692f465238c13029496b8c865a6d89ad/images/img2.png) | ![image alt](https://github.com/amdyCode/chat_app/blob/f85c6596692f465238c13029496b8c865a6d89ad/images/img3.png) |
 | *Connexion, inscription et réinitialisation* | *Contacts, présence et statut de frappe* | *Bulles de chat, accusés et envoi instantané* |
 
 ---
