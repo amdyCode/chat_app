@@ -377,13 +377,7 @@ class AuthScreen extends StatelessWidget {
                       ],
                     ),
                     TextButton(
-                      onPressed: () {
-                        Get.snackbar(
-                          'Information',
-                          'Un lien de réinitialisation vous a été envoyé.',
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
-                      },
+                      onPressed: controller.sendPasswordReset,
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: Size.zero,

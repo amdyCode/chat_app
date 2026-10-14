@@ -65,15 +65,23 @@ class User {
   }
 
   factory User.fromMap(Map<String, dynamic> map) {
+    DateTime? parsedLastSeen;
+    final rawLastSeen = map['lastSeen'];
+    if (rawLastSeen is int) {
+      parsedLastSeen = DateTime.fromMillisecondsSinceEpoch(rawLastSeen);
+    } else if (rawLastSeen != null) {
+      try {
+        parsedLastSeen = (rawLastSeen as dynamic).toDate() as DateTime?;
+      } catch (_) {}
+    }
+
     return User(
       id: map['id'] as String? ?? '',
       name: map['name'] as String? ?? '',
       email: map['email'] as String? ?? '',
-      role: map['role'] as String? ?? '',
+      role: map['role'] as String? ?? 'Membre actif',
       isOnline: map['isOnline'] as bool? ?? false,
-      lastSeen: map['lastSeen'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['lastSeen'] as int)
-          : null,
+      lastSeen: parsedLastSeen,
       statusMessage: map['statusMessage'] as String? ?? '',
       blockedUserIds: List<String>.from(map['blockedUserIds'] as List? ?? []),
     );

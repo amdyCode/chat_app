@@ -17,8 +17,8 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    emailController = TextEditingController(text: 'camille.rousseau@chat.io');
-    passwordController = TextEditingController(text: 'motdepasse123');
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
     nameController = TextEditingController();
   }
 
@@ -68,6 +68,33 @@ class AuthController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> sendPasswordReset() async {
+    final email = emailController.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      Get.snackbar(
+        'Email requis',
+        'Veuillez saisir une adresse email valide ci-dessus.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    try {
+      await AuthService.to.sendPasswordResetEmail(email);
+      Get.snackbar(
+        'Email envoyé',
+        'Un lien de réinitialisation vous a été envoyé à $email.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Erreur',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 }
