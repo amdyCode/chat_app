@@ -7,13 +7,32 @@ import 'package:chat_app/widgets/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
   final User contact;
 
   const ChatScreen({
     super.key,
     required this.contact,
   });
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  late final ChatController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.put(ChatController(widget.contact), tag: widget.contact.id);
+  }
+
+  @override
+  void dispose() {
+    Get.delete<ChatController>(tag: widget.contact.id);
+    super.dispose();
+  }
 
   String _formatLastSeen(DateTime? lastSeen) {
     if (lastSeen == null) return 'Hors ligne';
@@ -24,19 +43,12 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(ChatController(contact), tag: contact.id);
     final myId = AuthService.to.currentUser.value?.id ?? 'u_me';
 
-    return PopScope(
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) {
-          Get.delete<ChatController>(tag: contact.id);
-        }
-      },
-      child: Scaffold(
-        backgroundColor: AppColors.surface,
-        appBar: _buildAppBar(controller, context),
-        body: Column(
+    return Scaffold(
+      backgroundColor: AppColors.surface,
+      appBar: _buildAppBar(controller, context),
+      body: Column(
         children: [
           Obx(() {
             if (controller.isBlocked) {
@@ -108,7 +120,7 @@ class ChatScreen extends StatelessWidget {
 
                   final msg = messages[index - 1];
                   final isMe = msg.senderId == myId;
-                  return MessageItem(msg: msg, isMe: isMe, contact: contact);
+                  return MessageItem(msg: msg, isMe: isMe, contact: widget.contact);
                 },
               );
             }),
@@ -117,7 +129,6 @@ class ChatScreen extends StatelessWidget {
           _buildComposer(controller, context),
         ],
       ),
-    ),
     );
   }
 
@@ -130,8 +141,7 @@ class ChatScreen extends StatelessWidget {
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: AppColors.primary),
         onPressed: () {
-          Get.delete<ChatController>(tag: contact.id);
-          Get.back();
+          Navigator.of(context).maybePop();
         },
       ),
       title: Obx(() {
@@ -143,7 +153,7 @@ class ChatScreen extends StatelessWidget {
           spacing: 12,
           children: [
             UserAvatar(
-              name: contact.name,
+              name: widget.contact.name,
               size: 40,
               showOnlineIndicator: true,
               isOnline: isOnline,
@@ -155,7 +165,7 @@ class ChatScreen extends StatelessWidget {
                 spacing: 2,
                 children: [
                   Text(
-                    contact.name,
+                    widget.contact.name,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -291,7 +301,7 @@ class ChatScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         spacing: 8,
         children: [
-          UserAvatar(name: contact.name, size: 28),
+          UserAvatar(name: widget.contact.name, size: 28),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
@@ -338,11 +348,11 @@ class ChatScreen extends StatelessWidget {
         spacing: 12,
         children: [
           UserAvatar(
-            name: contact.name,
+            name: widget.contact.name,
             size: 64,
           ),
           Text(
-            'Démarrer la discussion avec ${contact.name}',
+            'Démarrer la discussion avec ${widget.contact.name}',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -376,12 +386,7 @@ class ChatScreen extends StatelessWidget {
             ),
           ],
         ),
-        padding: EdgeInsets.only(
-          left: 16,
-          right: 16,
-          top: 10,
-          bottom: 10 + MediaQuery.viewInsetsOf(context).bottom,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: SafeArea(
           top: false,
           child: Row(
@@ -458,13 +463,13 @@ class ChatScreen extends StatelessWidget {
             spacing: 12,
             children: [
               UserAvatar(
-                name: contact.name,
+                name: widget.contact.name,
                 size: 64,
                 showOnlineIndicator: true,
-                isOnline: contact.isOnline,
+                isOnline: widget.contact.isOnline,
               ),
               Text(
-                contact.name,
+                widget.contact.name,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -472,25 +477,10 @@ class ChatScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                contact.email,
+                widget.contact.email,
                 style: const TextStyle(
                   fontSize: 13,
                   color: AppColors.onSurfaceVariant,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  contact.role,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
-                  ),
                 ),
               ),
             ],

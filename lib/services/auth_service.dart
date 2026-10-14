@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:get/get.dart';
 
-class AuthService extends GetxService {
+import 'package:flutter/material.dart';
+
+class AuthService extends GetxService with WidgetsBindingObserver {
   static AuthService get to => Get.find<AuthService>();
 
   final fb.FirebaseAuth _auth = fb.FirebaseAuth.instance;
@@ -23,14 +25,38 @@ class AuthService extends GetxService {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
     _bindAuthAndUsers();
   }
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     _authSubscription?.cancel();
     _usersSubscription?.cancel();
     super.onClose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_auth.currentUser == null) return;
+    if (state == AppLifecycleState.resumed) {
+      _setOnlineStatus(true);
+    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+      _setOnlineStatus(false);
+    }
+  }
+
+  Future<void> _setOnlineStatus(bool isOnline) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid != null) {
+      try {
+        await _firestore.collection('users').doc(uid).update({
+          'isOnline': isOnline,
+          'lastSeen': DateTime.now().millisecondsSinceEpoch,
+        });
+      } catch (_) {}
+    }
   }
 
   void _bindAuthAndUsers() {
@@ -82,7 +108,7 @@ class AuthService extends GetxService {
           role: 'Membre actif',
           isOnline: true,
           lastSeen: DateTime.now(),
-          statusMessage: 'En ligne',
+          statusMessage: '',
         );
         await docRef.set(newUser.toMap());
         currentUser.value = newUser;
@@ -148,7 +174,7 @@ class AuthService extends GetxService {
           role: 'Membre actif',
           isOnline: true,
           lastSeen: DateTime.now(),
-          statusMessage: 'Connecté(e)',
+          statusMessage: '',
         );
 
         try {
@@ -165,7 +191,6 @@ class AuthService extends GetxService {
     }
   }
 
-  // Déconnexion Firebase Authentication
   Future<void> logout() async {
     try {
       if (currentUser.value != null) {

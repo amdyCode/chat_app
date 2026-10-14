@@ -336,14 +336,6 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Text(
-                      contact.role,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.onSurfaceVariant,
-                      ),
-                    ),
                     if (isTyping)
                       Row(
                         spacing: 4,
@@ -360,13 +352,12 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ],
                       )
-                    else
+                    else if (lastMsg != null)
                       Text(
-                        lastMsg != null ? lastMsg.text : contact.statusMessage,
+                        lastMsg.text,
                         style: TextStyle(
                           fontSize: 12,
-                          color: lastMsg != null ? AppColors.onSurfaceVariant : AppColors.outline,
-                          fontStyle: lastMsg == null ? FontStyle.italic : FontStyle.normal,
+                          color: AppColors.onSurfaceVariant,
                           fontWeight: unreadCount > 0 ? FontWeight.w600 : FontWeight.normal,
                         ),
                         maxLines: 1,

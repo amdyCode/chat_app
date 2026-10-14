@@ -71,19 +71,35 @@ class Message {
       orElse: () => MessageReceipt.sent,
     );
 
+    DateTime parseDate(dynamic val) {
+      if (val is int) return DateTime.fromMillisecondsSinceEpoch(val);
+      if (val != null) {
+        try {
+          return (val as dynamic).toDate() as DateTime;
+        } catch (_) {}
+      }
+      return DateTime.now();
+    }
+
+    DateTime? parseNullableDate(dynamic val) {
+      if (val is int) return DateTime.fromMillisecondsSinceEpoch(val);
+      if (val != null) {
+        try {
+          return (val as dynamic).toDate() as DateTime?;
+        } catch (_) {}
+      }
+      return null;
+    }
+
     return Message(
       id: map['id'] as String? ?? '',
       senderId: map['senderId'] as String? ?? '',
       receiverId: map['receiverId'] as String? ?? '',
       text: map['text'] as String? ?? '',
-      timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp'] as int? ?? 0),
+      timestamp: parseDate(map['timestamp']),
       receipt: receipt,
-      deliveredAt: map['deliveredAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['deliveredAt'] as int)
-          : null,
-      readAt: map['readAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['readAt'] as int)
-          : null,
+      deliveredAt: parseNullableDate(map['deliveredAt']),
+      readAt: parseNullableDate(map['readAt']),
     );
   }
 }

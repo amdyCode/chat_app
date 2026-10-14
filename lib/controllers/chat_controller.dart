@@ -22,7 +22,8 @@ class ChatController extends GetxController {
     textController = TextEditingController();
     scrollController = ScrollController();
 
-    // Defer state updates until after current frame build phase completes
+    ChatService.to.bindMessagesForContact(contact.id);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ChatService.to.markMessagesAsRead(contactId: contact.id);
       _scrollToBottom();
@@ -38,6 +39,7 @@ class ChatController extends GetxController {
 
   @override
   void onClose() {
+    ChatService.to.unbindMessagesForContact(contact.id);
     _typingDebounce?.cancel();
     _messageWorker?.dispose();
     textController.dispose();
@@ -77,18 +79,19 @@ class ChatController extends GetxController {
     }
   }
 
-  void sendMessage() {
+  void sendMessage() async {
     final text = textController.text.trim();
     if (text.isEmpty) return;
 
-    final sent = ChatService.to.sendMessage(
+    textController.clear();
+    ChatService.to.setMyTyping(contactId: contact.id, isTyping: false);
+
+    final sent = await ChatService.to.sendMessage(
       receiverId: contact.id,
       text: text,
     );
 
     if (sent) {
-      textController.clear();
-      ChatService.to.setMyTyping(contactId: contact.id, isTyping: false);
       _scrollToBottom();
     }
   }
